@@ -1,19 +1,19 @@
 <template>
   <div>
     <tab-bar>
-      <tab-bar-item path='/home' activeColor='salmon'>
+      <tab-bar-item path='/home'>
         <span slot="icon" class="iconfont icon-shouye"></span>
         <span slot="title">首页</span>
       </tab-bar-item>
-      <tab-bar-item path='/catagory' activeColor='salmon'>
+      <tab-bar-item path='/catagory'>
         <span slot="icon" class="iconfont icon-fenlei"></span>
         <span slot="title">分类</span>
       </tab-bar-item>
-      <tab-bar-item path='/cart' activeColor='salmon'>
+      <tab-bar-item path='/cart'>
         <span slot="icon" class="iconfont icon-gouwuche"></span>
         <span slot="title">购物车</span>
       </tab-bar-item>
-      <tab-bar-item path='/profile' activeColor='salmon'>
+      <tab-bar-item path='/profile'>
         <span slot="icon" class="iconfont icon-wode"></span>
         <span slot="title">我的</span>
       </tab-bar-item>
