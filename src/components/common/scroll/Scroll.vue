@@ -44,18 +44,19 @@
       this.scroll.finishPullUp();
     })}
     },
-    
-  // updated(){
-  //   this.scroll.refresh();
-  //   console.log(111);
-    
-  // },
+    // updated(){
+    //   this.scroll.refresh();
+      
+    // },
   methods:{
     scrollTo(x,y,time=300){
       this.scroll.scrollTo(x,y,time);
     },
     refresh(){
       this.scroll.refresh();
+    },
+    getScrollY(){
+      return this.scroll ? this.scroll.y : 0
     }
   }
   }

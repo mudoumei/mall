@@ -3,11 +3,11 @@
     <nav-bar class="home-nav">
       <h2 slot="center">购物街</h2>
     </nav-bar>
-    <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" class='tab-fixed' v-show="isTabFixed"></tab-control>
+    <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" class='tab-fixed' v-show="isTabFixed" ref="tabControl2"></tab-control>
     <scroll class="content" ref="scroll" :probe-type="3" :pull-up-load="true" @contentScroll="contentScroll" @pullUpLoad="loadMore">
     <home-swiper class="home-swiper" :banners="banners" @homeSwiperImgLoad="SwiperImgLoad"></home-swiper>
     <home-recommend :recommends="recommends"></home-recommend>
-    <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" ref="tabControl" ></tab-control>
+    <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" ref="tabControl1" ></tab-control>
     <good-list :goodsList="showGoods"></good-list>
     </scroll>
     <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
@@ -19,13 +19,13 @@
  import TabControl from 'components/content/tabcontrol/TabControl'
  import GoodList from 'components/content/goodlist/GoodList'
  import Scroll from 'components/common/scroll/Scroll'
- import BackTop from 'components/common/backtop/BackTop'
 
  import {getHomeMultidata,getHomeGoods} from 'network/home'
 
  import HomeSwiper from './childComps/HomeSwiper'
  import HomeRecommend from './childComps/HomeRecommend'
  import {debounce} from 'common/utils'
+ import {backTopMixin} from 'common/mixin'
   export default {
     name:'Home',
     data(){
@@ -38,11 +38,12 @@
             'sell':{page:0,list:[]}
           },
           currentType:'pop',
-          isShowBackTop:false,
           tabOffsetTop:339,
-          isTabFixed:false
+          isTabFixed:false,
+          saveY:0
         }
       },
+      mixins:[backTopMixin],
     created(){
       this.getHomeMultidata();
       this.getHomeGoods('pop');
@@ -51,9 +52,16 @@
     },
     mounted(){
       const refresh = debounce(this.$refs.scroll.refresh,500);
-      this.$bus.$on('itemImageLoad',()=>{
+      this.$bus.$on('homeItemImageLoad',()=>{
         refresh()
       })
+    },
+    activated(){
+      this.$refs.scroll.scrollTo(0,this.saveY,0);
+      this.$refs.scroll.refresh()
+    },
+    deactivated(){
+      this.saveY=this.$refs.scroll.getScrollY();
     },
     components:{
       NavBar,
@@ -62,7 +70,6 @@
       TabControl,
       GoodList,
       Scroll,
-      BackTop
     },
     methods:{
      
@@ -77,7 +84,7 @@
         getHomeGoods(type,page).then(res=>{
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page+=1
-          console.log(page);
+          
         })
       },
       loadMore(){
@@ -95,16 +102,17 @@
           this.currentType='sell'
           break;   
         }
-      },
-      backClick(){
-       this.$refs.scroll.scrollTo(0,0,500);
+        this.$refs.tabControl1.currentIndex=index;
+        this.$refs.tabControl2.currentIndex=index;
+        
       },
       contentScroll(position){
-       this.isShowBackTop= Math.abs(position.y) > 1000;
-       this.isTabFixed=Math.abs(position.y)>this.tabOffsetTop
+       this.listenShowBackTop(position);
+       this.isTabFixed=Math.abs(position.y)>this.tabOffsetTop;
+       
       },
       SwiperImgLoad(){
-        console.log(this.$refs.tabControl.$el.offsetTop);
+        console.log(this.$refs.tabControl1.$el.offsetTop);
       }
     },
      computed:{
